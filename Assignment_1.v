@@ -191,3 +191,103 @@ Example test_blt_nat2: (blt_nat 2 4) = true.
 Proof. reflexivity. Qed.
 Example test_blt_nat3: (blt_nat 4 2) = false.
 Proof. reflexivity. Qed.
+
+Theorem plus_1_1 : forall n:nat, 1 + n = S n.
+Proof.
+  intros n. reflexivity. Qed.
+
+Theorem mult_0_l : forall n:nat, 0 * n = 0.
+Proof.
+  intros n. reflexivity. Qed.
+
+Theorem plus_O_n : forall n : nat, 0 + n = n.
+Proof.
+  intros n. reflexivity. Qed.
+
+Theorem plus_id_example : forall n m:nat,
+  n = m ->
+  n + n = m + m.
+
+Proof.
+  intros n m.
+  intros H.
+  rewrite H.
+  reflexivity. Qed.
+
+(* Exercise: 1 star (plus_id_exercise) *)
+Theorem plus_id_exercise : forall n m o : nat,
+  n = m -> m = o -> n + m = m + o.
+Proof.
+  intros n m o.
+  intros H_1 H_2.
+  rewrite -> H_1 .
+  rewrite -> H_2.
+  reflexivity. Qed.
+
+(* End Exercise *)
+
+Theorem mult_0_plus : forall n m : nat,
+  (0 + n) * m = n * m.
+Proof.
+  intros n m.
+  rewrite -> plus_O_n.
+  reflexivity. Qed.
+
+(* Exercise: 2 stars (mult_S_1) *)
+Theorem mult_S_1 : forall n m : nat,
+  m = S n ->
+  m * (1 + n) = m * m.
+Proof.
+  intros n m.
+  intros H.
+  rewrite -> H.
+  rewrite <- plus_1_1.
+  reflexivity. Qed.
+
+Theorem plus_1_neq_0 : forall n : nat,
+  beq_nat (n + 1) 0 = false.
+Proof.
+  intros n. destruct n as [| n'].
+    reflexivity.
+    reflexivity. Qed.
+
+Theorem negb_involutive : forall b : bool,
+  negb (negb b) = b.
+Proof.
+  intros b. destruct b.
+    reflexivity.
+    reflexivity. Qed.
+
+(* Exercise: 1 star (zero_nbeq_plus_1) *)
+Theorem zero_nbeq_plus_1 : forall n : nat,
+  beq_nat 0 (n + 1) = false.
+Proof.
+  intros n. destruct n.
+  reflexivity.
+  reflexivity. Qed.
+
+Inductive bin : Type :=
+  | B : bin
+  | D (b:bin) : bin
+  | N (b:bin) : bin.
+
+Fixpoint incbin (n : bin) : bin :=
+match n with
+| B => N (B)
+| D n' => N n'
+| N n' => D (incbin n')
+end.
+
+Fixpoint double (n:nat) :=
+match n with
+| O => O
+| S n' => S (S (double n'))
+end.
+
+Fixpoint bin2un (n : bin) : nat :=
+match n with
+| B => O
+| D n' => double (bin2un n')
+| N n' => S (double (bin2un n'))
+end.
+
