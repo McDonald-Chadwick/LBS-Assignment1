@@ -267,27 +267,37 @@ Proof.
   reflexivity. Qed.
 
 Inductive bin : Type :=
-  | B : bin
-  | D (b:bin) : bin
-  | N (b:bin) : bin.
+  | Base : bin
+  | Double (b:bin) : bin
+  | DoubleOne (b:bin) : bin.
 
 Fixpoint incbin (n : bin) : bin :=
-match n with
-| B => N (B)
-| D n' => N n'
-| N n' => D (incbin n')
-end.
+  match n with
+  | Base => DoubleOne n
+  | Double n' => DoubleOne n'
+  | DoubleOne n' => Double (incbin n') 
+  end.
 
-Fixpoint double (n:nat) :=
-match n with
-| O => O
-| S n' => S (S (double n'))
-end.
+Fixpoint doubleNat (n:nat) :=
+  match n with
+  | O => O
+  | S n' => S (S (doubleNat n'))
+  end.
 
-Fixpoint bin2un (n : bin) : nat :=
-match n with
-| B => O
-| D n' => double (bin2un n')
-| N n' => S (double (bin2un n'))
-end.
+Fixpoint binToNat (n : bin) : nat :=
+  match n with
+  | Base => O
+  | Double n' => doubleNat (binToNat n')
+  | DoubleOne n' => S (doubleNat (binToNat n'))
+  end.
 
+Example test_incbin1: (incbin Base) = DoubleOne (Base).
+Proof. reflexivity. Qed.
+Example test_incbin2: (incbin (DoubleOne Base) ) = (Double (DoubleOne Base)).
+Proof. reflexivity. Qed.
+
+Eval compute in binToNat Base.
+Eval compute in binToNat (Double (DoubleOne Base)).
+Eval compute in binToNat ( incbin (Double (DoubleOne Base))).
+Eval compute in binToNat (incbin (incbin (incbin (incbin (incbin (incbin (incbin Base))))))).
+Eval compute in incbin (incbin (incbin (incbin (incbin (incbin (incbin (incbin Base))))))).
